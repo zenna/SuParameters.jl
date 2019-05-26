@@ -1,3 +1,5 @@
+module Param
+import JLD2
 "Parameter Set"
 struct Params{I, T} <: AbstractDict{I, T}
   d::Dict{I, T}
@@ -99,3 +101,4 @@ end
 Base.show(io::IO, φ::Params) = show(io, φ.d)
 Base.display(φ::Params) = (println("Params"); display(φ.d))
 
+end

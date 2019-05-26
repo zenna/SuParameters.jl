@@ -1,5 +1,10 @@
-module SuParameters.jl
+module SuParameters
 
-greet() = print("Hello World!")
+export SuParams, Params
 
-end # module
+include("param.jl")
+using .Param
+include("suparam.jl")
+using .SuParam
+
+end

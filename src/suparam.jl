@@ -1,7 +1,7 @@
-module SuParameters
+module SuParam
 using Omega: RandVar, apl, ciid, Ω, ID, uid, constant
 import Omega
-import ..RunTools: Params
+import ..Param: Params
 
 export SuParams
 
