@@ -4,13 +4,15 @@ Like normal parameters, but __super__.
 
 What makes SuParameters super?
 
-- Fields can be used before they are defined.  This allos you to define fields relative to another field which lack information about now but anticipate getting that information later.
+- Fields can be used before they are defined.  This allows you to define fields relative to another field, for which lack information about now but anticipate getting that information later
 
 - Updating fields automatically updates fields that depend on it
 
-- `SuParam`eters can take random variables as arguments.  Technically, a `SuParam` __is__ a random variable.  It defines a distribution over `Params` objects.
+- `SuParam`eters can take random variables as arguments.  Technically, a `SuParam` __is__ a random variable.  It defines a distribution over `Params` objects
 
 - Consequently, `SuParam`s can be conditioend.
+
+# Example
 
 ```julia
 using SuParameters
@@ -46,11 +48,74 @@ x.b = poisson(2)
 @test rand(x.a) isa Integer
 ```
 
+# Usage
+
+### Construction
+
+Create a SuParams in any one of the following ways
+
+- Using the keyword constructor
+
+```julia
+x = SuParams(a = 3, b = 4)
+``` 
+
+- Through assinging values to fields
+
+```julia
+x = SuParams()
+x.a = 3
+x.b = 4
+```
+
+### Access
+
+Fiels of a `SuParam` are accessed with `.` (dot)"
+
+```julia
+x = SuParams(a = 3, b = 4)
+x.a
+``` 
+
+The result of dot access is a random variable.
+To get a concrete value out, use `rand`
+
+```julia
+x = SuParams(a = 3, b = 4)
+rand(x.a)
+``` 
+
+`~` can be used instead of `rand`.
+
+```julia
+x = SuParams(a = 3, b = 4)
+~x
+~x.a
+``` 
+
+If a field has not been assigned, it will return `missing`
+
+```julia
+julia> x = SuParams()
+Dict{Symbol,Any} with 0 entries
+
+julia> ~x.a
+missing
+```
+
+If a field is a `RandVar` (a random variable), a SuParam.
+
+```julia
+x = SuParams(a = normal(0, 1))
+~x
+~x.a
+``` 
+
 ### Conditioning
 
 Use `cond!` to add conditions to a `SuParams`
 
-```
+```julia
 using SuParameters. Omega
 using Test
 x = SuParams()
@@ -66,22 +131,3 @@ Dict{Symbol,Float64} with 3 entries:
 cond!(x, x.bmi ==ₛ 25000)
 ~x.bmi
 ```
-
-# Uage
-
-Create a SuParams in any one of the following ways
-
-Using the keyword constructor
-
-```julia
-x = SuParams(a = 3, b = 4)
-``` 
-
-Through assinging values to fields
-
-```julia
-x = SuParams()
-x.a = 3
-x.b = 4
-``` 
-
