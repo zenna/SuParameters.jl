@@ -1,5 +1,8 @@
 module Param
 import JLD2
+
+export Params
+
 "Parameter Set"
 struct Params{I, T} <: AbstractDict{I, T}
   d::Dict{I, T}

@@ -3,14 +3,15 @@ using Omega: RandVar, apl, ciid, Ω, ID, uid, constant
 import Omega
 import ..Param: Params
 
-export SuParams
+export SuParams, cond!
 
 "SuParams are random variables over parameters"
-struct SuParams{I, T} <: RandVar
-  id::ID
-  d::Dict{I, T}
+struct SuParams{I, T, C} <: RandVar
+  id::ID        # RandVar ID
+  d::Dict{I, T} # Mapping from keys to valkues/randvars
+  conds::C        # Conditions
   function SuParams(x::Dict{I, T}) where {I, T}
-    new{I, T}(uid(), x)
+    new{I, T, Vector{RandVar}}(uid(), x, RandVar[])
   end
 end
 
@@ -29,6 +30,8 @@ function Base.getproperty(φ::SuParams, k::Symbol)
     getfield(φ, :d)
   elseif k == :id
     getfield(φ, :id)
+  elseif k == :conds
+    getfield(φ, :conds)
   else
     ciid(ω -> k in keys(getfield(φ, :d)) ? aplifrv(getfield(φ, :d)[k], ω) : constant(missing)(ω))
   end
@@ -51,15 +54,20 @@ resolve(v::RandVar, ω) = dag(apl(v, ω), ω) # If the result of randvar applica
 resolve(v::Params, ω) = v(ω)
 
 function Omega.ppapl(rp::SuParams, ω::Ω)
+  foreach(c -> Omega.cond(ω, c(ω)), rp.conds)
   Params(Dict(k => resolve(v, ω) for (k, v) in rp.d))
 end
+
+# Conditions
+
+cond!(x::SuParams, c::RandVar) = push!(x.conds, c)
 
 
 # To sample from Params, first convert to SuParams
 Base.rand(φ::Params, n::Integer) = rand(SuParams(φ), n)
 Base.rand(φ::Params) = rand(SuParams(φ))
 
-Base.show(io, sp::SuParams) = show(io, sp.d)
-Base.show(io, mime, sp::SuParams) = show(io, mine, sp.d)
+Base.show(io::IO, sp::SuParams) = show(io, sp.d)
+# Base.show(io, mime, sp::SuParams) = show(io, mine, sp.d)
 Base.display(sp::SuParams) = display(sp.d)
 end

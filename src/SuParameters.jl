@@ -1,6 +1,6 @@
 module SuParameters
 
-export SuParams, Params
+export SuParams, Params, cond!
 
 include("param.jl")
 using .Param
