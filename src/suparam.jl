@@ -53,7 +53,7 @@ resolve(v, ω) = v
 resolve(v::RandVar, ω) = dag(apl(v, ω), ω) # If the result of randvar application is a params, recurse
 resolve(v::Params, ω) = v(ω)
 
-function Omega.ppapl(rp::SuParams, ω::Ω)
+function Omega.NonDet.ppapl(rp::SuParams, ω::Ω)
   foreach(c -> Omega.cond(ω, c(ω)), rp.conds)
   Params(Dict(k => resolve(v, ω) for (k, v) in rp.d))
 end
