@@ -1,7 +1,7 @@
 module Param
 import JLD2
 
-export Params
+export Params, saveparams, linearstring
 
 "Parameter Set"
 struct Params{I, T} <: AbstractDict{I, T}
