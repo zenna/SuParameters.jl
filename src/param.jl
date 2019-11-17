@@ -1,7 +1,9 @@
 module Param
 import JLD2
+import BSON
 
-export Params, saveparams, linearstring
+export Params, saveparams, linearstring, loadparams
+using ..SuParameters
 
 "Parameter Set"
 struct Params{I, T} <: AbstractDict{I, T}
@@ -76,14 +78,23 @@ end
 "Convert φ into namedtuple, useful for type stability / performance"
 namedtuple(φ::Params) = NamedTuple{(keys(φ)...,)}((values(φ)...,))
 
-# IO
-function saveparams(param::Params, fn::String; verbose = true)
+# # IO
+# function saveparams(param::Params, fn::String; verbose = true)
+#   verbose && println("Saving params to $fn")
+#   JLD2.@save fn param
+# end
+
+function saveparams(params, fn::String; verbose = true)
   verbose && println("Saving params to $fn")
-  JLD2.@save fn param
+  BSON.bson(fn, Dict(:param => params))
 end
 
+# "Load Paramas from path `fn`"
+# loadparams(fn)::Params = (JLD2.@load fn param; param)
+
 "Load Paramas from path `fn`"
-loadparams(fn)::Params = (JLD2.@load fn param; param)
+loadparams(fn) = BSON.load(fn)[:param]
+
 
 # Show
 "Turn a key value into command line argument"
